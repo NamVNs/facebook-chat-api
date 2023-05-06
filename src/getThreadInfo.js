@@ -92,6 +92,7 @@ function formatThreadGraphQLResponse(data) {
           )
         : {},
     adminIDs: messageThread.thread_admins,
+    userInfo: messageThread.all_participants.edges.map($=>$.node.messaging_actor),
 
     // @Undocumented
     topEmojis: messageThread.top_emojis,
@@ -131,20 +132,21 @@ module.exports = function(defaultFuncs, api, ctx) {
     // `queries` has to be a string. I couldn't tell from the dev console. This
     // took me a really long time to figure out. I deserve a cookie for this.
     var form = {
-      queries: JSON.stringify({
-        o0: {
-          // This doc_id is valid as of February 1st, 2018.
-          doc_id: "1498317363570230",
-          query_params: {
-            id: threadID,
-            message_limit: 0,
-            load_messages: 0,
-            load_read_receipts: false,
-            before: null
-          }
-        }
-      })
-    };
+            queries: JSON.stringify({
+                o0: {
+                    // This doc_id is valid as of July 20th, 2020
+                    doc_id: "3449967031715030",
+                    query_params: {
+                        id: threadID,
+                        message_limit: 0,
+                        load_messages: false,
+                        load_read_receipts: false,
+                        before: null
+                    }
+                }
+            }),
+            batch_name: "MessengerGraphQLThreadFetcher"
+        };
 
     defaultFuncs
       .post("https://www.facebook.com/api/graphqlbatch/", ctx.jar, form)
